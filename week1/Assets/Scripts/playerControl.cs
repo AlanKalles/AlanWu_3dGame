@@ -6,39 +6,77 @@ using UnityEngine.UIElements;
 
 public class playerControl : MonoBehaviour
 {
-    Animator anim;
-    bool movingState;
-
-    Vector3 movementDirection;
-
+    [Header("Movement")]
     public float speed;
-    public float rotationFactorPerFrame;
+    public Transform orientation;
+    public float groundDrag;
 
-    CharacterController controller;
+    [Header("Ground Check")]
+    public float playerHeight;
+    public LayerMask whatIsGround;
+    bool grounded;
+
+    float horizontalInput;
+    float verticalInput;
+
+    [Header("Animation")]
+    public Animator anim;
+    
+    bool movingState;
+    Vector3 movementDirection;
+    Rigidbody rb;
 
     // Start is called before the first frame update
-    private void Awake()
+    private void Start()
     {
-        anim = GetComponent<Animator>();
-        controller = GetComponent<CharacterController>();
         movingState = false;
+        rb = GetComponent<Rigidbody>();
+        rb.freezeRotation = true;
+    }
+
+    private void Update()
+    {
+        grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+        Debug.DrawRay(transform.position, Vector3.down);
+        myInput();
+        speedControl();
+
+        if (grounded)
+        {
+            rb.drag = groundDrag;
+        }
+        else
+        {
+            rb.drag = 0;
+        }
     }
 
     private void FixedUpdate()
     {
         movementAnimation();
         movement();
+    }
 
+    private void myInput()
+    {
+        horizontalInput = Input.GetAxis("Horizontal");
+        verticalInput = Input.GetAxis("Vertical");
     }
     private void movement()
     {
-        float lrV = Input.GetAxis("Horizontal");
-        float fbV = Input.GetAxis("Vertical");
-        movementDirection = new Vector3 (lrV, 0.0f, fbV);
-        controller.Move(movementDirection * speed * Time.deltaTime);
-        if (movementDirection != Vector3.zero)
+        movementDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
+
+        rb.AddForce(movementDirection.normalized * speed * 10f, ForceMode.Force);
+    }
+
+    private void speedControl()
+    {
+        Vector3 flatVel = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
+
+        if(flatVel.magnitude > speed)
         {
-            transform.forward = movementDirection;
+            Vector3 limitVel = flatVel.normalized * speed;
+            flatVel = new Vector3(-limitVel.x, rb.velocity.y, limitVel.z);
         }
     }
 
