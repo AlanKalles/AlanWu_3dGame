@@ -1,32 +1,48 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.PlasticSCM.Editor.WebApi;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class playerControl : MonoBehaviour
 {
     Animator anim;
-    Transform trans;
     bool movingState;
+
+    Vector3 movementDirection;
+
+    public float speed;
+    public float rotationFactorPerFrame;
+
+    CharacterController controller;
+
     // Start is called before the first frame update
-    void Start()
+    private void Awake()
     {
         anim = GetComponent<Animator>();
-        trans = GetComponent<Transform>();
+        controller = GetComponent<CharacterController>();
         movingState = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     private void FixedUpdate()
     {
+        movementAnimation();
         movement();
+
+    }
+    private void movement()
+    {
+        float lrV = Input.GetAxis("Horizontal");
+        float fbV = Input.GetAxis("Vertical");
+        movementDirection = new Vector3 (lrV, 0.0f, fbV);
+        controller.Move(movementDirection * speed * Time.deltaTime);
+        if (movementDirection != Vector3.zero)
+        {
+            transform.forward = movementDirection;
+        }
     }
 
-    private void movement()
+    private void movementAnimation()
     {
         bool isWalk = anim.GetBool("isWalking");
         bool forward = Input.GetKey(KeyCode.W);
@@ -49,5 +65,6 @@ public class playerControl : MonoBehaviour
         {
             anim.SetBool("isWalking", false);
         }
+
     }
 }
