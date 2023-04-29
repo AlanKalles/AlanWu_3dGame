@@ -22,22 +22,24 @@ public class playerControl : MonoBehaviour
     [Header("Animation")]
     public Animator anim;
     
-    bool movingState;
     Vector3 movementDirection;
     Rigidbody rb;
+
+    public float rotationSpeed;
 
     // Start is called before the first frame update
     private void Start()
     {
-        movingState = false;
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
+
+        Debug.Log("Orientation: " + orientation);
+
     }
 
     private void Update()
     {
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
-        Debug.DrawRay(transform.position, Vector3.down);
         myInput();
         speedControl();
 
@@ -64,9 +66,19 @@ public class playerControl : MonoBehaviour
     }
     private void movement()
     {
+        myInput();
         movementDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
+        Debug.DrawRay(transform.position, movementDirection, Color.green);
+
+        if (movementDirection.magnitude > 0f)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(movementDirection, Vector3.up);
+
+            rb.MoveRotation(Quaternion.Slerp(rb.rotation, targetRotation, rotationSpeed * Time.deltaTime));
+        }
         rb.AddForce(movementDirection.normalized * speed * 10f, ForceMode.Force);
+
     }
 
     private void speedControl()
@@ -76,33 +88,19 @@ public class playerControl : MonoBehaviour
         if(flatVel.magnitude > speed)
         {
             Vector3 limitVel = flatVel.normalized * speed;
-            flatVel = new Vector3(-limitVel.x, rb.velocity.y, limitVel.z);
+            limitVel = new Vector3(-limitVel.x, rb.velocity.y, limitVel.z);
         }
     }
 
     private void movementAnimation()
     {
-        bool isWalk = anim.GetBool("isWalking");
-        bool forward = Input.GetKey(KeyCode.W);
-        bool backward = Input.GetKey(KeyCode.S);
-        bool left = Input.GetKey(KeyCode.A);
-        bool right = Input.GetKey(KeyCode.D);
-        if (forward || backward || left || right)
-        {
-            movingState = true;
-        }
-        else
-        {
-            movingState = false;
-        }
-        if (!isWalk && movingState)
-        {
-            anim.SetBool("isWalking", true);
-        }
-        else if (isWalk && !movingState)
-        {
-            anim.SetBool("isWalking", false);
-        }
+        bool forward = Input.GetAxisRaw("Vertical") > 0;
+        bool backward = Input.GetAxisRaw("Vertical") < 0;
+        bool left = Input.GetAxisRaw("Horizontal") < 0;
+        bool right = Input.GetAxisRaw("Horizontal") > 0;
+        bool moving = forward || backward || left || right;
+
+        anim.SetBool("isWalking", moving);
 
     }
 }

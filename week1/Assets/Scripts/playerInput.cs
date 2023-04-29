@@ -24,7 +24,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     ""name"": ""playerInput"",
     ""maps"": [
         {
-            ""name"": ""characterControl"",
+            ""name"": ""player"",
             ""id"": ""b5039f1a-4219-4136-9c43-692c8b76cad5"",
             ""actions"": [
                 {
@@ -39,8 +39,8 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
             ],
             ""bindings"": [
                 {
-                    ""name"": ""2D Vector"",
-                    ""id"": ""980be8be-ffc3-4d40-97a1-281759f9f85a"",
+                    ""name"": ""wasd"",
+                    ""id"": ""01dc6a54-a74b-415e-a948-5f161ea42b0a"",
                     ""path"": ""2DVector"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -51,7 +51,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""up"",
-                    ""id"": ""5dd2f70c-36cf-46b7-b343-c9783ea47239"",
+                    ""id"": ""e72b6175-ea15-44f4-87f0-ddb0ed383fed"",
                     ""path"": ""<Keyboard>/w"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -62,7 +62,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""down"",
-                    ""id"": ""c12f9347-9c77-48aa-ad0b-a2ac556f965b"",
+                    ""id"": ""e2a752d5-d8fd-42f0-9810-02016b5e2705"",
                     ""path"": ""<Keyboard>/s"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -73,7 +73,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""left"",
-                    ""id"": ""b661a3d1-7800-4282-b856-7a2d1d2c32b7"",
+                    ""id"": ""d75db6d8-3ad0-4cc2-a095-3d4c65f12ecf"",
                     ""path"": ""<Keyboard>/a"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -84,7 +84,7 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""right"",
-                    ""id"": ""14f19a44-d201-4be8-aaf5-62d2bebee0b7"",
+                    ""id"": ""8519a224-936f-4ef9-b918-c50fd2ca8155"",
                     ""path"": ""<Keyboard>/d"",
                     ""interactions"": """",
                     ""processors"": """",
@@ -98,9 +98,9 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
     ],
     ""controlSchemes"": []
 }");
-        // characterControl
-        m_characterControl = asset.FindActionMap("characterControl", throwIfNotFound: true);
-        m_characterControl_move = m_characterControl.FindAction("move", throwIfNotFound: true);
+        // player
+        m_player = asset.FindActionMap("player", throwIfNotFound: true);
+        m_player_move = m_player.FindAction("move", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -157,29 +157,29 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
         return asset.FindBinding(bindingMask, out action);
     }
 
-    // characterControl
-    private readonly InputActionMap m_characterControl;
-    private ICharacterControlActions m_CharacterControlActionsCallbackInterface;
-    private readonly InputAction m_characterControl_move;
-    public struct CharacterControlActions
+    // player
+    private readonly InputActionMap m_player;
+    private IPlayerActions m_PlayerActionsCallbackInterface;
+    private readonly InputAction m_player_move;
+    public struct PlayerActions
     {
         private @PlayerInput m_Wrapper;
-        public CharacterControlActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
-        public InputAction @move => m_Wrapper.m_characterControl_move;
-        public InputActionMap Get() { return m_Wrapper.m_characterControl; }
+        public PlayerActions(@PlayerInput wrapper) { m_Wrapper = wrapper; }
+        public InputAction @move => m_Wrapper.m_player_move;
+        public InputActionMap Get() { return m_Wrapper.m_player; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(CharacterControlActions set) { return set.Get(); }
-        public void SetCallbacks(ICharacterControlActions instance)
+        public static implicit operator InputActionMap(PlayerActions set) { return set.Get(); }
+        public void SetCallbacks(IPlayerActions instance)
         {
-            if (m_Wrapper.m_CharacterControlActionsCallbackInterface != null)
+            if (m_Wrapper.m_PlayerActionsCallbackInterface != null)
             {
-                @move.started -= m_Wrapper.m_CharacterControlActionsCallbackInterface.OnMove;
-                @move.performed -= m_Wrapper.m_CharacterControlActionsCallbackInterface.OnMove;
-                @move.canceled -= m_Wrapper.m_CharacterControlActionsCallbackInterface.OnMove;
+                @move.started -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
+                @move.performed -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
+                @move.canceled -= m_Wrapper.m_PlayerActionsCallbackInterface.OnMove;
             }
-            m_Wrapper.m_CharacterControlActionsCallbackInterface = instance;
+            m_Wrapper.m_PlayerActionsCallbackInterface = instance;
             if (instance != null)
             {
                 @move.started += instance.OnMove;
@@ -188,8 +188,8 @@ public partial class @PlayerInput : IInputActionCollection2, IDisposable
             }
         }
     }
-    public CharacterControlActions @characterControl => new CharacterControlActions(this);
-    public interface ICharacterControlActions
+    public PlayerActions @player => new PlayerActions(this);
+    public interface IPlayerActions
     {
         void OnMove(InputAction.CallbackContext context);
     }
