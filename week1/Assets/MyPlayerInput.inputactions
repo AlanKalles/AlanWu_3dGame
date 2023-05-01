@@ -1,14 +1,23 @@
 {
-    "name": "playerInput",
+    "name": "MyPlayerInput",
     "maps": [
         {
-            "name": "player",
+            "name": "myPlayer",
             "id": "b5039f1a-4219-4136-9c43-692c8b76cad5",
             "actions": [
                 {
                     "name": "move",
                     "type": "Value",
                     "id": "c5c7a5f0-40a3-48e2-918a-66b79bc04a04",
+                    "expectedControlType": "Vector2",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Look",
+                    "type": "Value",
+                    "id": "71229fd3-c454-4194-ad48-498bde538b79",
                     "expectedControlType": "Vector2",
                     "processors": "",
                     "interactions": "",
@@ -70,6 +79,17 @@
                     "action": "move",
                     "isComposite": false,
                     "isPartOfComposite": true
+                },
+                {
+                    "name": "",
+                    "id": "adc4b29d-e092-4fb1-b9f8-2685ac272156",
+                    "path": "<Mouse>/delta",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Look",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         }
