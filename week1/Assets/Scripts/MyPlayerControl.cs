@@ -23,6 +23,7 @@ public class MyPlayerControl : MonoBehaviour
     {
         controller = GetComponent<CharacterController>();
         animator = GetComponentInChildren<Animator>();
+        Cursor.visible = false;
     }
 
     // Update is called once per frame
