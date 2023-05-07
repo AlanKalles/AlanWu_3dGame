@@ -11,18 +11,17 @@ public class MyPlayerControl : MonoBehaviour
     [SerializeField]
     private float moveSpeed;
 
-    [SerializeField] 
-    private Animator animator;
+    public Animator animator;
 
     CharacterController controller;
     private float gravity = 9.81f;
     private Vector2 moveInput;
+    private float betweenIdleWalk = 0;
 
     // Start is called before the first frame update
     void Start()
     {
         controller = GetComponent<CharacterController>();
-        animator = GetComponentInChildren<Animator>();
         Cursor.visible = false;
     }
 
@@ -39,6 +38,18 @@ public class MyPlayerControl : MonoBehaviour
         moveVelocity.y = 0;
         Rotate(moveVelocity);
         animator.SetFloat("Speed", moveVelocity.magnitude);
+        if (moveVelocity.magnitude < 0.01)
+        {
+            betweenIdleWalk += 1;
+        }
+        else {
+            betweenIdleWalk = 0;
+        }
+        if (betweenIdleWalk > 2)
+        {
+            animator.SetTrigger("Stop");
+        }
+      
     }
 
     private void Rotate(Vector3 target)
