@@ -11,24 +11,37 @@ public class MyPlayerControl : MonoBehaviour
     [SerializeField]
     private float moveSpeed;
 
-    public Animator animator;
+    private Animator animator;
 
     CharacterController controller;
     private float gravity = 9.81f;
     private Vector2 moveInput;
     private float betweenIdleWalk = 0;
 
+    public float interactionDistance = 2f;
+    public KeyCode interactKey = KeyCode.E;
+
+    private CarController carInteractionController;
+
+
     // Start is called before the first frame update
     void Start()
     {
         controller = GetComponent<CharacterController>();
         Cursor.visible = false;
+        animator = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
     void Update()
     {
         Move();
+
+        if (carInteractionController != null && Input.GetKeyDown(interactKey))
+        {
+            carInteractionController.OnPlayerInteraction();
+        }
+
     }
 
     private void Move()
@@ -61,4 +74,27 @@ public class MyPlayerControl : MonoBehaviour
     {
         moveInput = context.ReadValue<Vector2>();
     }
+
+    private void FixedUpdate()
+    {
+        // Check if the player is within range of a car
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, transform.forward, out hit, interactionDistance))
+        {
+            // If the object is a car and the player is not already interacting with it, set the carInteractionController
+            CarController newController = hit.collider.GetComponent<CarController>();
+            if (newController != null && newController != carInteractionController)
+            {
+                carInteractionController = newController;
+            }
+        }
+        else
+        {
+            // If the player is no longer within range of the car, reset the carInteractionController
+            carInteractionController = null;
+        }
+    }
+
+
 }
